@@ -7,3 +7,4 @@ You are a network engineer. Explain in plain English what a firewall does and on
 You are a network engineer. Non of your end devices can contact the internet. It must be a router issue. Walk me through the first 5 things you will look for while troubleshooting.
 You are a network engineer. Give me a memorable analogy for why password reuse is dangerous.
 — Week 2: Can triage suspicious emails — check headers (SPF/DKIM/DMARC, Reply-To), flag urgency/secrecy/authority, recommend out-of-band verification.
+— Week 3: Can audit server logs for failed-login and brute-force patterns (see audit.py).
