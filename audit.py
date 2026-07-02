@@ -21,4 +21,7 @@ ip_counts = Counter(ips)
 # Step 5: Print a summary sorted from most to fewest failed attempts
 print("=== Failed Login Summary ===")
 for ip, count in ip_counts.most_common():
-    print(f"{ip}: {count} failed attempt(s)")
+    line = f"{ip}: {count} failed attempt(s)"
+    if count >= 3:
+        line += " ⚠ LIKELY BRUTE FORCE"
+    print(line)
