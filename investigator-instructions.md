@@ -12,4 +12,4 @@ You are a network engineer. Give me a memorable analogy for why password reuse i
 
 — Week 3: Can audit server logs for failed-login and brute-force patterns (see audit.py).
 
-— Week 4: Can hunt network beaconing (hunt.py) and reconstruct an incident timeline from multiple logs to guide response (timeline.py).
+— Week 4: Can hunt network beaconing (hunt.py), reconstruct an incident timeline from multiple logs (timeline.py), and runs an automated triage pipeline (GitHub Actions + a local Llama 3.2 model via Ollama) that reads the IR runbook, maps findings to MITRE ATT&CK, and writes a verified incident report (see triage.py).
