@@ -1,0 +1,7 @@
+06/15/2026-08:42:10.123 [**] [1:2024897:3] ET MALWARE Suspicious PowerShell Download Cradle 10.1.1.20:49821 -> 45.137.21.130:443
+06/15/2026-08:42:18.456 [**] [1:2013028:4] ET POLICY HTTP Request to IP Instead of Domain 10.1.1.20:49833 -> 45.137.21.130:443
+06/15/2026-08:43:05.789 [**] [1:2028360:2] ET TROJAN Possible C2 Beacon (fixed interval) 10.1.1.20:51244 -> 45.137.21.130:8443  payload=512 bytes
+06/15/2026-09:05:10.012 [**] [1:2028360:2] ET TROJAN Possible C2 Beacon (fixed interval) 10.1.1.20:51244 -> 45.137.21.130:8443  payload=512 bytes
+06/15/2026-09:15:10.334 [**] [1:2028360:2] ET TROJAN Possible C2 Beacon (fixed interval) 10.1.1.20:51244 -> 45.137.21.130:8443  payload=512 bytes
+06/15/2026-09:18:44.667 [**] [1:2016143:1] ET POLICY SMB External to Internal Lateral Movement 10.1.1.20:52101 -> 10.1.1.45:445
+06/15/2026-09:25:10.901 [**] [1:2028360:2] ET TROJAN Possible C2 Beacon (fixed interval) 10.1.1.20:51244 -> 45.137.21.130:8443  payload=512 bytes

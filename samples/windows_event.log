@@ -1,0 +1,8 @@
+2026-06-15 08:41:50  WIN-FIN-07  Security  4688  New process: WINWORD.EXE opened Invoice_June.docm  User=jmartin
+2026-06-15 08:42:05  WIN-FIN-07  Security  4688  New process: powershell.exe (parent WINWORD.EXE)  User=jmartin
+2026-06-15 08:44:12  WIN-FIN-07  Security  4720  A user account was created  Account Name=svc_backup  Caller=jmartin
+2026-06-15 08:44:13  WIN-FIN-07  Security  4732  svc_backup added to local group Administrators
+2026-06-15 08:55:02  WIN-FIN-07  Security  4624  An account was successfully logged on  Account=svc_backup  Source=10.1.1.20  LogonType=2
+2026-06-15 09:18:41  WIN-FIN-07  Security  4624  An account was successfully logged on  Account=svc_backup  Source=10.1.1.20  LogonType=10
+2026-06-15 09:18:55  WIN-FILE-01 Security  4624  An account was successfully logged on  Account=svc_backup  Source=10.1.1.20  LogonType=10  Workstation=WIN-FIN-07
+2026-06-15 09:19:02  WIN-FILE-01 Security  5140  A network share object was accessed  Share=\\WIN-FILE-01\Finance  Account=svc_backup  Source=10.1.1.20
