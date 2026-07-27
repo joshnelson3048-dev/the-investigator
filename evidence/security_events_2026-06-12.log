@@ -1,0 +1,6 @@
+2026-06-12 14:02:11 ALERT brute_force 192.168.1.50 admin 5 failures in 60s
+2026-06-12 14:03:44 ALERT auth_success 192.168.1.50 admin login succeeded after failures
+2026-06-12 14:05:02 ALERT network_beacon 10.0.0.37 -> 185.220.101.47:8443 interval=60s payload=512
+2026-06-12 14:12:18 ALERT file_encrypt report.xlsx renamed to report.xlsx.locked host=FILE-SRV-01
+2026-06-12 14:12:19 ALERT file_encrypt budget.xlsx renamed to budget.xlsx.locked host=FILE-SRV-01
+2026-06-12 14:12:30 ALERT ransom_note READ_ME_TO_DECRYPT.txt created on FILE-SRV-01

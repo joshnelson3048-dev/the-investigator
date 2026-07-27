@@ -1,5 +1,8 @@
+import os
 import streamlit as st
 from groq import Groq
+
+REPORTS_DIR = "reports"
 
 CORRELATION_SYSTEM_PROMPT = """You are a senior SOC analyst. The user will provide multiple log files
 from the same incident. Correlate them into ONE story — shared hosts, IPs, accounts, and timestamps.
@@ -30,8 +33,8 @@ CHAT_SYSTEM_PROMPT = """You are The Investigator, a senior SOC analyst helping a
 Answer questions about the uploaded logs and the correlation report below.
 Recommend verifying before taking action. Never invent facts not in the evidence."""
 
-st.set_page_config(page_title="The Investigator — SOC Copilot", layout="wide")
-st.title("The Investigator — SOC Copilot")
+st.set_page_config(page_title="The Investigator — SOC Copilot v1.1", layout="wide")
+st.title("The Investigator — SOC Copilot v1.1")
 
 if "analysis" not in st.session_state:
     st.session_state.analysis = ""
@@ -40,7 +43,9 @@ if "uploaded_logs" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-tab_correlate, tab_chat = st.tabs(["Correlate & Triage", "Ask the Investigator"])
+tab_correlate, tab_chat, tab_cases = st.tabs(
+    ["Correlate & Triage", "Ask the Investigator", "Case Files"]
+)
 
 
 def run_correlation(all_uploaded_logs: str) -> str:
@@ -131,3 +136,20 @@ with tab_chat:
                 answer = run_chat(question)
             st.session_state.chat_history.append({"role": "assistant", "content": answer})
             st.rerun()
+
+with tab_cases:
+    st.subheader("Pipeline reports")
+    if os.path.isdir(REPORTS_DIR):
+        md_files = sorted(
+            (f for f in os.listdir(REPORTS_DIR) if f.endswith(".md")),
+            reverse=True,
+        )
+    else:
+        md_files = []
+
+    if not md_files:
+        st.info("No case files yet. Reports saved to reports/ will appear here.")
+    else:
+        choice = st.selectbox("Pick a case file", md_files)
+        with open(os.path.join(REPORTS_DIR, choice), encoding="utf-8") as f:
+            st.markdown(f.read())
