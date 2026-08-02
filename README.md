@@ -11,6 +11,7 @@ An AI-powered security & network analyst I'm building across 8 weeks.
 - **Autonomous Investigation** — agentic mode: the model chooses tools (`list_evidence`, `read_log`, `lookup_mitre`) and produces a verdict (see `agent.py`)
 - **Auto-Triage pipeline** — push new evidence to `evidence/`; GitHub Actions runs Ollama and commits a fresh report
 - **Docker** — `docker build -t investigator-agent .` then `docker run --rm -e GROQ_API_KEY=... investigator-agent`
+- **Docker Hub:** https://hub.docker.com/r/joshnelson3048/investigator-agent
 
 ## Skills so far
 - Week 1: Thinks like a security analyst (prompt library)
