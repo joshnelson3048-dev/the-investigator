@@ -1,0 +1,9 @@
+.git
+.streamlit
+__pycache__
+*.pyc
+.env
+reports/
+samples/
+*.md
+!evidence/

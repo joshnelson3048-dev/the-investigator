@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from groq import Groq
+from agent import run_agent
 
 REPORTS_DIR = "reports"
 
@@ -33,8 +34,8 @@ CHAT_SYSTEM_PROMPT = """You are The Investigator, a senior SOC analyst helping a
 Answer questions about the uploaded logs and the correlation report below.
 Recommend verifying before taking action. Never invent facts not in the evidence."""
 
-st.set_page_config(page_title="The Investigator — SOC Copilot v1.1", layout="wide")
-st.title("The Investigator — SOC Copilot v1.1")
+st.set_page_config(page_title="The Investigator — SOC Copilot v1.3", layout="wide")
+st.title("The Investigator — SOC Copilot v1.3")
 
 if "analysis" not in st.session_state:
     st.session_state.analysis = ""
@@ -43,8 +44,8 @@ if "uploaded_logs" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-tab_correlate, tab_chat, tab_cases = st.tabs(
-    ["Correlate & Triage", "Ask the Investigator", "Case Files"]
+tab_correlate, tab_chat, tab_cases, tab_agent = st.tabs(
+    ["Correlate & Triage", "Ask the Investigator", "Case Files", "Autonomous Investigation"]
 )
 
 
@@ -153,3 +154,22 @@ with tab_cases:
         choice = st.selectbox("Pick a case file", md_files)
         with open(os.path.join(REPORTS_DIR, choice), encoding="utf-8") as f:
             st.markdown(f.read())
+
+with tab_agent:
+    st.subheader("Autonomous Investigation")
+    st.caption("The agent chooses which tools to run — supervise the trail before trusting the verdict.")
+    if st.button("Run autonomous investigation", type="primary"):
+        with st.status("The Investigator is working…", expanded=True) as status:
+            def on_tool(name, args, result):
+                preview = str(result)
+                if len(preview) > 200:
+                    preview = preview[:200] + "…"
+                status.write(f"**{name}**(`{args}`) → {preview}")
+
+            verdict = run_agent(
+                "Investigate the incident in evidence/ and report what happened. "
+                "Read all logs, verify MITRE IDs, and produce a Markdown verdict.",
+                api_key=st.secrets["GROQ_API_KEY"],
+                on_tool_call=on_tool,
+            )
+        st.markdown(verdict)
