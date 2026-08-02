@@ -181,7 +181,7 @@ def _cli_main() -> None:
         preview = str(result)
         if len(preview) > 120:
             preview = preview[:120] + "…"
-        tree.add(f"[cyan]Step {step_num}[/cyan] {name}({args}) → {preview}")
+        tree.add(f"[cyan]Step {step_num}[/cyan] {name}({args}) -> {preview}")
 
     goal = (
         "Investigate the incident in evidence/ and report what happened. "
