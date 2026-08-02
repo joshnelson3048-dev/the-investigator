@@ -4,6 +4,7 @@ import json
 import os
 
 from groq import Groq
+from groq import BadRequestError
 from rich.console import Console
 from rich.panel import Panel
 from rich.tree import Tree
@@ -11,6 +12,21 @@ from rich.tree import Tree
 EVIDENCE_DIR = "evidence"
 MODEL = "llama-3.3-70b-versatile"
 MAX_STEPS = 12
+
+
+def _load_api_key() -> str | None:
+    """Read Groq key from environment, or from local .streamlit/secrets.toml."""
+    key = os.environ.get("GROQ_API_KEY")
+    if key:
+        return key
+    secrets_path = os.path.join(".streamlit", "secrets.toml")
+    if os.path.isfile(secrets_path):
+        with open(secrets_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("GROQ_API_KEY"):
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return None
 
 SYSTEM = """You are The Investigator, an autonomous SOC analyst.
 Investigate incidents by calling tools — never guess log contents or MITRE IDs.
@@ -123,15 +139,35 @@ TOOLS = [
 ]
 
 
+def _assistant_message(msg) -> dict:
+    """Convert SDK message to a plain dict Groq accepts on follow-up turns."""
+    out: dict = {"role": "assistant", "content": msg.content or ""}
+    if msg.tool_calls:
+        out["tool_calls"] = [
+            {
+                "id": tc.id,
+                "type": "function",
+                "function": {
+                    "name": tc.function.name,
+                    "arguments": tc.function.arguments or "{}",
+                },
+            }
+            for tc in msg.tool_calls
+        ]
+    return out
+
+
 def run_agent(
     goal: str,
     api_key: str | None = None,
     on_tool_call=None,
 ) -> str:
     """Run the agent loop; return the final Markdown verdict."""
-    key = api_key or os.environ.get("GROQ_API_KEY")
+    key = api_key or _load_api_key()
     if not key:
-        raise RuntimeError("GROQ_API_KEY not set in environment or argument")
+        raise RuntimeError(
+            "GROQ_API_KEY not set. Export it or add it to .streamlit/secrets.toml"
+        )
 
     client = Groq(api_key=key)
     messages = [
@@ -140,14 +176,29 @@ def run_agent(
     ]
 
     for _step in range(MAX_STEPS):
-        resp = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-        )
+        try:
+            resp = client.chat.completions.create(
+                model=MODEL,
+                messages=messages,
+                tools=TOOLS,
+                tool_choice="auto",
+            )
+        except BadRequestError as err:
+            if "tool_use_failed" not in str(err):
+                raise
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Your last tool call was malformed. Call one tool at a time "
+                        "using the provided function schema with valid JSON arguments."
+                    ),
+                }
+            )
+            continue
+
         msg = resp.choices[0].message
-        messages.append(msg)
+        messages.append(_assistant_message(msg))
 
         if not msg.tool_calls:
             return msg.content or ""
