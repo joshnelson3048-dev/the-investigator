@@ -2,7 +2,7 @@
 
 An AI-powered security & network analyst I'm building across 8 weeks.
 
-**Live app:** [the-investigator on Streamlit Cloud](https://share.streamlit.io) *(replace with your `.streamlit.app` URL after deploy)*
+**Live app:** [the-investigator on Streamlit Cloud](https://the-investigator-joshnelson.streamlit.app/)
 
 ## What it does
 - **Correlate & Triage** — upload multiple log files; Groq correlates them into a MITRE-mapped incident report
