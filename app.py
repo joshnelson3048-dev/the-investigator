@@ -34,8 +34,15 @@ CHAT_SYSTEM_PROMPT = """You are The Investigator, a senior SOC analyst helping a
 Answer questions about the uploaded logs and the correlation report below.
 Recommend verifying before taking action. Never invent facts not in the evidence."""
 
-st.set_page_config(page_title="The Investigator — SOC Copilot v1.3", layout="wide")
-st.title("The Investigator — SOC Copilot v1.3")
+TROUBLESHOOT_SYSTEM_PROMPT = """You are a practical network and IT troubleshooter helping a junior analyst.
+The user describes a problem. Respond with exactly FIVE first steps to try, numbered 1–5.
+Keep each step short, concrete, and safe (prefer verify/check before changing production).
+If the problem is unclear, ask one clarifying question after the five steps.
+Do not invent specific device names, IPs, or error codes the user did not provide.
+Always remind them to verify before making irreversible changes."""
+
+st.set_page_config(page_title="The Investigator — SOC Copilot v1.4", layout="wide")
+st.title("The Investigator — SOC Copilot v1.4")
 
 if "analysis" not in st.session_state:
     st.session_state.analysis = ""
@@ -43,9 +50,17 @@ if "uploaded_logs" not in st.session_state:
     st.session_state.uploaded_logs = ""
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "troubleshoot_history" not in st.session_state:
+    st.session_state.troubleshoot_history = []
 
-tab_correlate, tab_chat, tab_cases, tab_agent = st.tabs(
-    ["Correlate & Triage", "Ask the Investigator", "Case Files", "Autonomous Investigation"]
+tab_correlate, tab_chat, tab_cases, tab_agent, tab_troubleshoot = st.tabs(
+    [
+        "Correlate & Triage",
+        "Ask the Investigator",
+        "Case Files",
+        "Autonomous Investigation",
+        "Troubleshoot",
+    ]
 )
 
 
@@ -69,6 +84,20 @@ def run_chat(user_question: str) -> str:
     )
     messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT + "\n\n" + context}]
     for turn in st.session_state.chat_history:
+        messages.append({"role": turn["role"], "content": turn["content"]})
+    messages.append({"role": "user", "content": user_question})
+
+    resp = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=messages,
+    )
+    return resp.choices[0].message.content
+
+
+def run_troubleshoot(user_question: str) -> str:
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    messages = [{"role": "system", "content": TROUBLESHOOT_SYSTEM_PROMPT}]
+    for turn in st.session_state.troubleshoot_history:
         messages.append({"role": turn["role"], "content": turn["content"]})
     messages.append({"role": "user", "content": user_question})
 
@@ -130,7 +159,7 @@ with tab_chat:
             with st.chat_message(turn["role"]):
                 st.markdown(turn["content"])
 
-        question = st.chat_input("Ask the Investigator...")
+        question = st.chat_input("Ask the Investigator...", key="case_chat")
         if question:
             st.session_state.chat_history.append({"role": "user", "content": question})
             with st.spinner("Thinking..."):
@@ -173,3 +202,28 @@ with tab_agent:
                 on_tool_call=on_tool,
             )
         st.markdown(verdict)
+
+with tab_troubleshoot:
+    st.subheader("IT / Network Troubleshooting")
+    st.caption("Describe the problem. You'll get five first steps to try — verify before changing production.")
+
+    col_clear, _ = st.columns([1, 3])
+    with col_clear:
+        if st.button("Clear chat"):
+            st.session_state.troubleshoot_history = []
+            st.rerun()
+
+    for turn in st.session_state.troubleshoot_history:
+        with st.chat_message(turn["role"]):
+            st.markdown(turn["content"])
+
+    problem = st.chat_input(
+        "Describe the problem (e.g. no internet on VLAN 20)...",
+        key="troubleshoot_chat",
+    )
+    if problem:
+        st.session_state.troubleshoot_history.append({"role": "user", "content": problem})
+        with st.spinner("Building a 5-step plan..."):
+            answer = run_troubleshoot(problem)
+        st.session_state.troubleshoot_history.append({"role": "assistant", "content": answer})
+        st.rerun()

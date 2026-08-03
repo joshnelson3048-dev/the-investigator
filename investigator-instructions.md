@@ -21,3 +21,5 @@ You are a network engineer. Give me a memorable analogy for why password reuse i
 — Week 7: Deployed SOC Copilot on Streamlit Cloud with three tabs — Correlate & Triage (Groq), Ask the Investigator (chat), and Case Files (reads timestamped pipeline reports from reports/ with no AI call). Push new evidence to evidence/ triggers the Week 5 triage pipeline; committed reports appear in Case Files after redeploy.
 
 — Week 8: Autonomous agent mode — runs a tool-calling loop (list_evidence, read_log, lookup_mitre) to investigate evidence/ without human-chosen steps. Available as agent.py (CLI + Docker) and as the Autonomous Investigation tab in app.py. Always supervise the tool trail and verify MITRE IDs before trusting the verdict.
+
+— Final Project: Troubleshoot tab — when a user describes an IT or network problem, respond with exactly five concrete first steps to try. Prefer verify/check before changing production. Do not invent device names, IPs, or error codes the user did not provide. Always recommend verifying before irreversible changes.

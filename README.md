@@ -9,6 +9,7 @@ An AI-powered security & network analyst I'm building across 8 weeks.
 - **Ask the Investigator** — chat follow-ups about the current case
 - **Case Files** — browse timestamped reports written by the Week 5 triage pipeline in `reports/`
 - **Autonomous Investigation** — agentic mode: the model chooses tools (`list_evidence`, `read_log`, `lookup_mitre`) and produces a verdict (see `agent.py`)
+- **Troubleshoot** — describe an IT/network problem and get five first steps to try (same Groq key, no new secrets)
 - **Auto-Triage pipeline** — push new evidence to `evidence/`; GitHub Actions runs Ollama and commits a fresh report
 - **Docker** — `docker build -t investigator-agent .` then `docker run --rm -e GROQ_API_KEY=... investigator-agent`
 - **Docker Hub:** https://hub.docker.com/r/joshnelson3048/investigator-agent
@@ -22,5 +23,4 @@ An AI-powered security & network analyst I'm building across 8 weeks.
 - Week 6: A Streamlit SOC Copilot that correlates four telemetry sources (firewall, Sysmon, Windows, Suricata) via Groq and returns a triaged report with MITRE mapping, severity, and response plan (see app.py).
 - Week 7: Deployed the SOC Copilot to Streamlit Cloud; Case Files tab surfaces pipeline reports from `reports/`; push-to-deploy via GitHub.
 - Week 8: Autonomous agent mode (`agent.py`) — tool-calling loop with `list_evidence`, `read_log`, and `lookup_mitre`; packaged in Docker and integrated as the Autonomous Investigation tab in the live app.
-
-More coming each week.
+- **Final Project:** Troubleshoot tab — a Groq-powered IT/network chatbot that returns five practical first steps for a described problem (see `app.py`).
