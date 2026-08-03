@@ -1,4 +1,6 @@
+import json
 import os
+import re
 import streamlit as st
 from groq import Groq
 from agent import run_agent
@@ -35,19 +37,15 @@ Answer questions about the uploaded logs and the correlation report below.
 Recommend verifying before taking action. Never invent facts not in the evidence."""
 
 TROUBLESHOOT_SYSTEM_PROMPT = """You are a practical network and IT troubleshooter helping a junior analyst.
-The user describes a problem. Always reply with exactly FIVE steps, formatted as a Markdown numbered list:
+The user describes a problem. Reply with ONLY valid JSON (no markdown fences), exactly this shape:
+{"steps": ["step one", "step two", "step three", "step four", "step five"], "note": "optional clarifying question or verify reminder"}
 
-1. First step
-2. Second step
-3. Third step
-4. Fourth step
-5. Fifth step
-
-Use the numbers 1. 2. 3. 4. 5. — never bullets or unnumbered paragraphs for the steps.
-Keep each step short, concrete, and safe (prefer verify/check before changing production).
-If the problem is unclear, ask one clarifying question after the numbered list.
-Do not invent specific device names, IPs, or error codes the user did not provide.
-Always remind them to verify before making irreversible changes."""
+Rules:
+- steps must contain exactly 5 short, concrete first actions
+- prefer verify/check before changing production
+- do not invent device names, IPs, or error codes the user did not provide
+- put any clarifying question or verify reminder in "note" (can be empty string)
+"""
 
 st.set_page_config(page_title="The Investigator — SOC Copilot v1.4", layout="wide")
 st.title("The Investigator — SOC Copilot v1.4")
@@ -102,6 +100,43 @@ def run_chat(user_question: str) -> str:
     return resp.choices[0].message.content
 
 
+def _format_troubleshoot_reply(raw: str) -> str:
+    """Force a numbered 1–5 list in the UI, even if the model omits numbers."""
+    text = (raw or "").strip()
+    # Strip markdown code fences if present
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+
+    steps: list[str] = []
+    note = ""
+    try:
+        data = json.loads(text)
+        raw_steps = data.get("steps") or []
+        steps = [str(s).strip() for s in raw_steps if str(s).strip()]
+        note = str(data.get("note") or "").strip()
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        for line in text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            line = re.sub(r"^[\-\*\u2022]\s*", "", line)
+            line = re.sub(r"^\d+[\.\)]\s*", "", line)
+            if line.lower().startswith(("can you", "note:", "verify", "clarif")):
+                note = line
+                continue
+            steps.append(line)
+
+    steps = steps[:5]
+    while len(steps) < 5:
+        steps.append("Gather more details about the symptom and retry this check.")
+
+    numbered = "\n".join(f"{i}. {step}" for i, step in enumerate(steps, start=1))
+    if note:
+        return f"{numbered}\n\n{note}"
+    return numbered
+
+
 def run_troubleshoot(user_question: str) -> str:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     messages = [{"role": "system", "content": TROUBLESHOOT_SYSTEM_PROMPT}]
@@ -112,8 +147,9 @@ def run_troubleshoot(user_question: str) -> str:
     resp = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=messages,
+        response_format={"type": "json_object"},
     )
-    return resp.choices[0].message.content
+    return _format_troubleshoot_reply(resp.choices[0].message.content or "")
 
 
 with tab_correlate:
